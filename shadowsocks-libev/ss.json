@@ -1,0 +1,9 @@
+{
+    "server":"your vps server ip",
+    "server_port":443,
+    "password":"your passwd",
+    "timeout":300,
+    "method":"rc4-md5",
+    "fast_open": false
+}
+

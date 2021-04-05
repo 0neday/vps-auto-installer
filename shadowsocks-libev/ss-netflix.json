@@ -1,0 +1,8 @@
+{
+    "server":"173.0.55.66",
+    "server_port":11111,
+    "password":"dongtaiwang.com 123abc",
+    "timeout":300,
+    "method":"aes-256-cfb",
+    "fast_open": false
+}

@@ -1,0 +1,39 @@
+#!/bin/bash
+# THIS FILE IS ADDED FOR COMPATIBILITY PURPOSES
+#
+# It is highly advisable to create own systemd services or udev rules
+# to run scripts during boot instead of using this file.
+#
+# In contrast to previous versions due to parallel execution during boot
+# this script will NOT be run after all other services.
+#
+# Please note that you must run 'chmod +x /etc/rc.d/rc.local' to ensure
+# that this script will be executed during boot.
+
+touch /var/lock/subsys/local
+#export LD_LIBRARY_PATH=/opt/shadowsocks-libev/lib:/opt/trojan/lib:$LD_LIBRARY_PATH
+
+
+kill `pidof ss-server`
+/opt/shadowsocks-libev/bin/ss-server -6 -c /opt/shadowsocks-libev/ss.json -d 127.0.0.1 -f /tmp/ss.pid &
+#/opt/shadowsocks-libev/bin/ss-server -c /opt/shadowsocks-libev/ss.json -d 127.0.0.1 -f /tmp/ss.pid &
+
+kill `pidof ss-redir-3.0.0`
+/opt/shadowsocks-libev/bin/ss-redir-3.0.0 -c /opt/shadowsocks-libev/ss-netflix.json  -b 0.0.0.0 -l 1234 -f /tmp/ss.pid &
+
+kill `pidof trojan`
+sleep 1
+/opt/trojan/trojan -c /opt/trojan/trojan-server.json &
+
+#block
+ipset create block  hash:ip hashsize 4096
+ipset create blockv6  hash:ip hashsize 4096 family inet6
+
+# netflix
+ipset create netflix   hash:ip hashsize 4096
+
+service  iptables restart 
+service  ip6tables restart
+
+setenforce  0
+service dnsmasq restart
